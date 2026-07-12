@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Agriarivuruthal is a smart AI crop advisory system for farmers. Get customized crop recommendations, weather-based advice, and fertilizer calculators in English and Tamil.">
+  <title>Agriarivuruthal - Smart AI Crop Advisory Dashboard | அக்ரி அறிவிறுத்தல்</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#10b981">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icon-512.png">
+</head>
+<body class="lang-en" data-theme="light">
+
+  <!-- Header Section -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon" id="header-logo-icon"></div>
+      <div>
+        <h1 id="lbl-app-title">Agriarivuruthal</h1>
+        <span id="lbl-app-subtitle">Smart Crop Advisory</span>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <!-- Language Dropdown -->
+      <div class="form-group" style="margin-bottom: 0; flex-direction: row; align-items: center; gap: 0.5rem;">
+        <div id="icon-lang-globe" style="color: var(--text-secondary); display: flex;"></div>
+        <select id="lang-select" class="lang-selector" aria-label="Select Language / மொழியைத் தேர்ந்தெடுக்கவும்">
+          <option value="en">English</option>
+          <option value="ta">தமிழ் (Tamil)</option>
+        </select>
+      </div>
+
+      <!-- Theme Switcher -->
+      <button id="btn-theme-toggle" class="btn-icon" aria-label="Toggle Dark Mode" title="Toggle Theme">
+        <span id="icon-theme"></span>
+      </button>
+
+      <!-- Gemini Settings Trigger -->
+      <button id="btn-settings-toggle" class="btn-icon" aria-label="Configure AI Model Settings" title="Gemini AI Settings">
+        <span id="icon-settings"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Dashboard -->
+  <main class="dashboard-container">
+    
+    <!-- Left Chatbot Section -->
+    <section class="glass-panel chat-panel" aria-labelledby="chat-heading">
+      <div class="chat-header">
+        <div class="brand-icon" style="width: 36px; height: 36px;" id="chat-header-icon"></div>
+        <div class="chat-bot-status" style="flex: 1;">
+          <h2 id="chat-heading">Agriarivuruthal AI</h2>
+          <span id="lbl-status-online">Online Advisory</span>
+        </div>
+        <button id="btn-clear-chat" class="btn-icon" style="width: 32px; height: 32px; border: none; background: transparent;" aria-label="Clear Chat History" title="Clear Chat History">
+          <span id="icon-clear-chat"></span>
+        </button>
+      </div>
+      
+      <!-- Conversational Chat Stream -->
+      <div class="chat-messages" id="chat-messages-container">
+        <!-- Messages will be dynamically rendered here -->
+      </div>
+
+      <!-- Quick Action recommendation Chips -->
+      <div class="chat-quick-actions" id="chat-quick-actions">
+        <!-- Quick action chips will be rendered here based on language -->
+      </div>
+
+      <!-- Message input form -->
+      <form id="chat-input-form" class="chat-input-container" onsubmit="event.preventDefault();">
+        <input type="text" id="chat-text-input" class="chat-input" placeholder="Ask about crops, fertilizer, pests..." autocomplete="off" aria-label="Message chatbot">
+        <button type="submit" id="btn-send-message" class="btn-primary" style="padding: 0.75rem 1.25rem;" aria-label="Send Message">
+          <span id="icon-send"></span>
+        </button>
+      </form>
+    </section>
+
+    <!-- Right Panels (Climate and Recommendation Wizards) -->
+    <div class="main-content">
+      
+      <!-- Weather & Climate Advisory Widget -->
+      <section class="glass-panel climate-widget" aria-labelledby="climate-widget-heading">
+        <div class="climate-header">
+          <div class="climate-title-container">
+            <div id="icon-climate-header" class="climate-icon" style="width:36px; height:36px; background:transparent;"></div>
+            <h2 id="climate-widget-heading" style="font-size: 1.2rem; font-weight: 600;">Climate Advisory</h2>
+          </div>
+          
+          <div class="form-group" style="flex-direction: row; align-items: center; gap: 0.5rem; margin-bottom: 0;">
+            <label for="district-select" id="lbl-select-region" style="font-size: 0.8rem;">Region:</label>
+            <select id="district-select" class="form-control" style="width: 150px; height: 36px; padding: 0.25rem 0.5rem; font-size: 0.85rem;">
+              <option value="thanjavur">Thanjavur (Delta)</option>
+              <option value="coimbatore">Coimbatore (Semi-Arid)</option>
+              <option value="madurai">Madurai (Dry Zone)</option>
+              <option value="nilgiris">Nilgiris (Hilly/Wet)</option>
+              <option value="chennai">Chennai (Coastal)</option>
+            </select>
+            <button id="btn-gps-weather" class="btn-icon" style="width: 36px; height: 36px; flex-shrink: 0;" aria-label="Use Current Location Weather" title="Use Current GPS Location Weather">
+              <span id="icon-gps"></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="climate-grid">
+          <!-- Temp -->
+          <div class="climate-item">
+            <div class="climate-icon" id="climate-icon-temp"></div>
+            <div class="climate-info">
+              <span class="climate-label" id="lbl-temp">Temperature</span>
+              <span class="climate-value" id="val-temp">31°C</span>
+            </div>
+          </div>
+          <!-- Humidity -->
+          <div class="climate-item">
+            <div class="climate-icon" id="climate-icon-humidity"></div>
+            <div class="climate-info">
+              <span class="climate-label" id="lbl-humidity">Humidity</span>
+              <span class="climate-value" id="val-humidity">65%</span>
+            </div>
+          </div>
+          <!-- Rainfall -->
+          <div class="climate-item">
+            <div class="climate-icon" id="climate-icon-rain"></div>
+            <div class="climate-info">
+              <span class="climate-label" id="lbl-rain">Rain Probability</span>
+              <span class="climate-value" id="val-rain">10%</span>
+            </div>
+          </div>
+          <!-- Wind -->
+          <div class="climate-item">
+            <div class="climate-icon" id="climate-icon-wind"></div>
+            <div class="climate-info">
+              <span class="climate-label" id="lbl-wind">Wind Speed</span>
+              <span class="climate-value" id="val-wind">12 km/h</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Climate warnings and farming actions -->
+        <div id="climate-alert-box" class="climate-alerts good">
+          <div class="climate-alert-icon" id="climate-alert-icon"></div>
+          <div class="climate-alert-text">
+            <h4 id="climate-alert-title">Perfect Sowing Weather</h4>
+            <p id="climate-alert-desc">Moderate humidity and stable temperatures are optimal for sowing seeds and applying organic compost.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Saved Field Soil Profiles Panel -->
+      <section class="glass-panel" aria-labelledby="field-profiles-heading" style="padding: 1.25rem; display: flex; flex-direction: column; gap: 0.85rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--bg-panel-border); padding-bottom: 0.5rem;">
+          <h2 id="field-profiles-heading" style="font-size: 1.05rem; font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 0.5rem;">
+            <span id="icon-field-profiles-header" style="display:flex;"></span>
+            <span id="lbl-field-profiles-title">Saved Field Soil Profiles</span>
+          </h2>
+        </div>
+
+        <form id="save-field-form" style="display: flex; gap: 0.75rem; align-items: flex-end;" onsubmit="event.preventDefault();">
+          <div class="form-group" style="flex: 1;">
+            <label for="txt-field-name" id="lbl-field-name-input" style="font-size: 0.8rem; font-weight:600; color:var(--text-secondary);">Save current settings as Field Profile:</label>
+            <input type="text" id="txt-field-name" class="form-control" style="height: 38px; padding: 0.5rem; font-size: 0.85rem;" placeholder="e.g. Back Garden Loam" required>
+          </div>
+          <button type="submit" id="btn-save-field" class="btn-primary" style="height: 38px; padding: 0.5rem 1.25rem; font-size: 0.85rem; border-radius:4px;">Save Field</button>
+        </form>
+
+        <div id="saved-fields-list" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.25rem;">
+          <!-- Dynamically populated field profile chips -->
+        </div>
+      </section>
+
+      <!-- Recommendation and Calculator Tabs -->
+      <section class="glass-panel advisor-panel" aria-label="Agricultural Calculators">
+        <div class="tab-header">
+          <button class="tab-btn active" id="tab-btn-crop" data-target="tab-crop">
+            <span id="icon-tab-crop"></span>
+            <span id="lbl-tab-crop-title">Crop Recommendation</span>
+          </button>
+          <button class="tab-btn" id="tab-btn-fertilizer" data-target="tab-fertilizer">
+            <span id="icon-tab-fert"></span>
+            <span id="lbl-tab-fert-title">Fertilizer Calculator</span>
+          </button>
+          <button class="tab-btn" id="tab-btn-pests" data-target="tab-pests">
+            <span id="icon-tab-pests"></span>
+            <span id="lbl-tab-pests-title">Pest & Disease Guide</span>
+          </button>
+          <button class="tab-btn" id="tab-btn-calendar" data-target="tab-calendar">
+            <span id="icon-tab-calendar"></span>
+            <span id="lbl-tab-calendar-title">Farm Calendar</span>
+          </button>
+        </div>
+
+        <!-- Tab 1: Crop Recommendation Wizard -->
+        <div class="tab-content active" id="tab-crop">
+          <form id="crop-recommendation-form" onsubmit="event.preventDefault();">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="soil-select" id="lbl-soil-type">Soil Type</label>
+                <select id="soil-select" class="form-control">
+                  <option value="clayey">Clayey Soil (களிமண்)</option>
+                  <option value="loamy">Loamy Soil (வண்டல் மண்)</option>
+                  <option value="sandy">Sandy Soil (மணல் மண்)</option>
+                  <option value="alluvial">Alluvial Soil (ஆற்று வண்டல் மண்)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="water-select" id="lbl-water-availability">Water Availability</label>
+                <select id="water-select" class="form-control">
+                  <option value="high">High / Irrigation canals (அதிகம்)</option>
+                  <option value="medium">Medium / Borewell (மத்தியமம்)</option>
+                  <option value="low">Low / Rainfed (குறைவு)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="season-select" id="lbl-season">Current Season</label>
+                <select id="season-select" class="form-control">
+                  <option value="kharif">Kuruvai / Kharif (June - Sep)</option>
+                  <option value="rabi">Thaladi / Rabi (Oct - Jan)</option>
+                  <option value="zaid">Navarai / Summer (Feb - May)</option>
+                </select>
+              </div>
+            </div>
+            
+            <button type="submit" class="btn-primary" id="btn-submit-crop">Get Recommendations</button>
+          </form>
+
+          <!-- Crop Results Card -->
+          <div class="output-card" id="crop-output-card">
+            <div class="output-header">
+              <h3 id="lbl-crop-results-title">Recommended Crops</h3>
+              <span id="icon-crop-results" style="display:flex;"></span>
+            </div>
+            <div class="crop-results-grid" id="crop-results-container">
+              <!-- Dynamically populated crop recommendation cards -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Fertilizer Recommendation Calculator -->
+        <div class="tab-content" id="tab-fertilizer">
+          <form id="fertilizer-calculator-form" onsubmit="event.preventDefault();">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="crop-select" id="lbl-select-crop">Select Target Crop</label>
+                <select id="crop-select" class="form-control">
+                  <option value="paddy">Paddy / Nel (நெல்)</option>
+                  <option value="sugarcane">Sugarcane (கரும்பு)</option>
+                  <option value="groundnut">Groundnut (நிலக்கடலை)</option>
+                  <option value="maize">Maize (சோளம்)</option>
+                  <option value="cotton">Cotton (பருத்தி)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="soil-n" id="lbl-soil-n">Soil Nitrogen (N) Level</label>
+                <select id="soil-n" class="form-control">
+                  <option value="low">Low (Deficient)</option>
+                  <option value="medium" selected>Medium (Optimal)</option>
+                  <option value="high">High (Rich)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="soil-p" id="lbl-soil-p">Soil Phosphorus (P) Level</label>
+                <select id="soil-p" class="form-control">
+                  <option value="low">Low (Deficient)</option>
+                  <option value="medium" selected>Medium (Optimal)</option>
+                  <option value="high">High (Rich)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="soil-k" id="lbl-soil-k">Soil Potassium (K) Level</label>
+                <select id="soil-k" class="form-control">
+                  <option value="low">Low (Deficient)</option>
+                  <option value="medium" selected>Medium (Optimal)</option>
+                  <option value="high">High (Rich)</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary" id="btn-submit-fertilizer">Calculate Fertilizer Needs</button>
+          </form>
+
+          <!-- Fertilizer Results output -->
+          <div class="output-card" id="fertilizer-output-card">
+            <div class="output-header">
+              <h3 id="lbl-fertilizer-results-title">Fertilizer Dose (per Acre)</h3>
+              <span id="icon-fert-results" style="display:flex;"></span>
+            </div>
+
+            <div class="fertilizer-results">
+              <div id="fertilizer-guidance-text" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-primary); margin-bottom: 1rem;">
+                <!-- Customized advice based on crop + soil health -->
+              </div>
+
+              <div class="npk-bar-container">
+                <div class="npk-bar-label">
+                  <span id="lbl-npk-ratio">NPK Target Requirement (kg/Acre)</span>
+                  <span id="val-npk-ratio">120 - 60 - 60</span>
+                </div>
+                <div class="npk-bar-wrapper">
+                  <div class="npk-bar" id="npk-bar-visual" style="width: 75%;"></div>
+                </div>
+              </div>
+
+              <div class="fertilizer-bags-grid" id="fertilizer-bags-container">
+                <!-- Bag elements dynamically added -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Pest & Disease Guide -->
+        <div class="tab-content" id="tab-pests">
+          <div class="form-grid" style="grid-template-columns: 1fr; margin-bottom: 1.5rem;">
+            <div class="form-group">
+              <label for="pest-crop-filter" id="lbl-pest-crop-filter">Filter by Crop</label>
+              <select id="pest-crop-filter" class="form-control">
+                <option value="all">All Crops (அனைத்து பயிர்களும்)</option>
+                <option value="paddy">Paddy / Nel (நெல்)</option>
+                <option value="sugarcane">Sugarcane (கரும்பு)</option>
+                <option value="groundnut">Groundnut (நிலக்கடலை)</option>
+                <option value="maize">Maize (சோளம்)</option>
+                <option value="cotton">Cotton (பருத்தி)</option>
+                <option value="tomato">Tomato (தக்காளி)</option>
+                <option value="banana">Banana (வாழை)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="crop-results-grid" id="pest-catalog-container">
+            <!-- Dynamically populated pest cards -->
+          </div>
+        </div>
+
+        <!-- Tab 4: Farm Calendar -->
+        <div class="tab-content" id="tab-calendar">
+          <div class="form-grid" style="grid-template-columns: 1fr; margin-bottom: 1.5rem;">
+            <p id="lbl-calendar-desc" style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
+              Plan and track your crop schedule offline. Start a new cycle from the Crop Recommendation cards below, and manage your tasks checklist here.
+            </p>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 1.5rem;" id="calendar-cycles-container">
+            <!-- Dynamically populated crop cycle scheduler boards -->
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Settings Configuration Modal -->
+  <dialog id="settings-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="lbl-settings-modal-title">AI Chatbot Configurations</h3>
+        <button id="btn-close-settings" class="btn-icon" style="width: 32px; height: 32px;" aria-label="Close settings dialog"></button>
+      </div>
+      <div class="modal-body">
+        <p id="lbl-settings-desc" style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
+          By default, Agriarivuruthal uses a high-fidelity local agricultural intelligence database. You can paste your <strong>Gemini API Key</strong> below to unlock real-time custom Gemini AI consulting.
+        </p>
+        
+        <div class="form-group">
+          <label for="txt-gemini-key" id="lbl-gemini-key">Gemini API Key</label>
+          <input type="password" id="txt-gemini-key" class="form-control" placeholder="AIzaSy..." autocomplete="off">
+        </div>
+        
+        <div style="font-size: 0.75rem; color: var(--success); display: none; align-items: center; gap: 0.25rem;" id="key-success-badge">
+          <span id="icon-badge-check" style="display:flex;"></span> <span id="lbl-key-active">Gemini API Connection Active</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-clear-settings" class="btn-secondary" style="padding: 0.5rem 1rem;">Clear Key</button>
+        <button id="btn-save-settings" class="btn-primary" style="padding: 0.5rem 1.25rem;">Save Settings</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Scripts loaded at end of body -->
+  <script src="db.js"></script>
+  <script src="icons.js"></script>
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then((reg) => console.log('Service Worker registered successfully:', reg.scope))
+          .catch((err) => console.log('Service Worker registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>
